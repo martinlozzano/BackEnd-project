@@ -1,0 +1,162 @@
+[
+     {
+          "id": 1,
+          "title": "Chalina",
+          "description": "Accesorio que cubre el cuello en el invierno.",
+          "code": "2020",
+          "price": 120,
+          "status": true,
+          "stock": 5,
+          "category": "Accesorio",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 2,
+          "title": "Pantalón",
+          "description": "Prenda que cubre desde la cintura hasta los talones.",
+          "code": "2021",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 3,
+          "title": "Campera",
+          "description": "Prenda que se usa de abrigo sobre el torso.",
+          "code": "2022",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 4,
+          "title": "Zapatillas",
+          "description": "Prenda que se coloca en los pies.",
+          "code": "2023",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 5,
+          "title": "Gorra",
+          "description": "Accesorio que se coloca encima de la cabeza.",
+          "code": "2024",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Accesorio",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 6,
+          "title": "Collar",
+          "description": "Accesorio que se coloca alrededor del cuello.",
+          "code": "2025",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Accesorio",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 7,
+          "title": "Shorts",
+          "description": "Prenda que cubre desde la cintura hasta las rodillas.",
+          "code": "2026",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 8,
+          "title": "Camisa",
+          "description": "Prenda que se coloca en el torso, generalmente para outfits formales.",
+          "code": "2027",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 9,
+          "title": "Pendientes",
+          "description": "Accesorio que se coloca en las orejas.",
+          "code": "2028",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Accesorio",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 10,
+          "title": "Corbata",
+          "description": "Accesorio que se coloca alrededor del cuello por encima de una camisa, generalmente utilizado en outfits formales.",
+          "code": "2029",
+          "price": 100,
+          "status": true,
+          "stock": 10,
+          "category": "Ropa",
+          "thumbnails": [
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/200",
+               "https://placeholder.pics/svg/150",
+               "https://placeholder.pics/svg/250"
+          ]
+     }
+]
