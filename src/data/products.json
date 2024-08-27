@@ -1,21 +1,5 @@
 [
      {
-          "id": 1,
-          "title": "Chalina",
-          "description": "Accesorio que cubre el cuello en el invierno.",
-          "code": "2020",
-          "price": 120,
-          "status": true,
-          "stock": 5,
-          "category": "Accesorio",
-          "thumbnails": [
-               "https://placeholder.pics/svg/150",
-               "https://placeholder.pics/svg/200",
-               "https://placeholder.pics/svg/150",
-               "https://placeholder.pics/svg/250"
-          ]
-     },
-     {
           "id": 2,
           "title": "Pantalón",
           "description": "Prenda que cubre desde la cintura hasta los talones.",
@@ -36,22 +20,6 @@
           "title": "Campera",
           "description": "Prenda que se usa de abrigo sobre el torso.",
           "code": "2022",
-          "price": 100,
-          "status": true,
-          "stock": 10,
-          "category": "Ropa",
-          "thumbnails": [
-               "https://placeholder.pics/svg/150",
-               "https://placeholder.pics/svg/200",
-               "https://placeholder.pics/svg/150",
-               "https://placeholder.pics/svg/250"
-          ]
-     },
-     {
-          "id": 4,
-          "title": "Zapatillas",
-          "description": "Prenda que se coloca en los pies.",
-          "code": "2023",
           "price": 100,
           "status": true,
           "stock": 10,
@@ -157,6 +125,19 @@
                "https://placeholder.pics/svg/200",
                "https://placeholder.pics/svg/150",
                "https://placeholder.pics/svg/250"
+          ]
+     },
+     {
+          "id": 11,
+          "title": "Lentes",
+          "description": "Objeto que se pone sobre los ojos",
+          "code": "2040",
+          "price": 110,
+          "status": true,
+          "stock": 10,
+          "category": "Accesorio",
+          "thumbnails": [
+               ""
           ]
      }
 ]

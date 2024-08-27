@@ -1,0 +1,32 @@
+<h2>Real Time Products</h2>
+<hr>
+<br><br>
+
+<form action="" id="formulario">
+
+    <input id="title" type="text" name="title" placeholder="Nombre">
+    <input id="description" type="text" name="description" placeholder="Descripcion">
+    <input id="price" type="number" name="price" placeholder="Precio">
+    <input id="code" type="text" name="code" placeholder="Código">
+    <input id="stock" type="text" name="stock" placeholder="Stock">
+    <input id="category" type="text" name="category" placeholder="Categoría">
+    <input id="status" type="text" name="status" placeholder="Status">
+
+    <input type="submit" id="btnSubmit" value="Enviar">
+</form>
+
+<div>
+    <ul id="list-products">
+        {{#each productos}}
+        <li>
+            <h3><strong>Nombre: </strong>{{title}}</h3>
+            <p><strong>Descripcion: </strong>{{description}}</p>
+            <span><strong>Precio: </strong>{{price}}</span>
+            <button onclick="eliminarProducto({{id}})">Eliminar</button>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/main.js"></script>

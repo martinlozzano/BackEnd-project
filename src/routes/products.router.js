@@ -81,8 +81,11 @@ router.get("/:pid", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    let { title, description, code, price, status:statusBody, stock, category, thumbnails = [""] } = req.body
-    let status = true
+    let { title, description, code, price, status, stock, category, thumbnails = [""] } = req.body
+
+    price = parseInt(price)
+    status = Boolean(status)
+    stock = parseInt(stock)
 
     //VALIDACIONES
 
@@ -102,9 +105,11 @@ router.post("/", async (req, res) => {
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({error: `Es necesario que el campo price sea colocado y que sea un number.`})
     }
-    if(typeof statusBody !== "boolean"){
+    if(status && typeof status !== "boolean"){
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({error: `Es necesario que el campo status sea colocado y que sea un boolean.`})
+    }else if(status === undefined){
+        status=true
     }
     if(!stock || typeof stock !== "number"){
         res.setHeader("Content-Type", "application/json")
@@ -118,8 +123,6 @@ router.post("/", async (req, res) => {
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({error: `Es necesario que el campo thumbnails sea un array de strings.`})
     }
-
-    status = statusBody
 
     let productos
     try {
