@@ -1,5 +1,4 @@
 const botonSubmit = document.getElementById("btnSubmit")
-/* const botonEliminar = document.getElementById("btnEliminar") */
 const listaProductos = document.getElementById("list-products")
 const inputs = document.getElementById("formulario")
 
@@ -14,7 +13,7 @@ const inputCategory = document.getElementById("category")
 const socket = io()
 let producto
 
-inputs.addEventListener("change", e => {
+inputs.addEventListener("change", async(e) => {
     producto = {
         title: inputTitle.value.trim(),
         description: inputDescription.value.trim(),
@@ -28,7 +27,6 @@ inputs.addEventListener("change", e => {
 
 botonSubmit.addEventListener("click", async(e) => {
     e.preventDefault()
-    console.log(inputStatus.value)
 
     let title = inputTitle.value.trim()
     let description = inputDescription.value.trim()
@@ -71,7 +69,6 @@ botonSubmit.addEventListener("click", async(e) => {
     })
 
     let datos = await response.json()
-    console.log(datos, response.status)
 
     if(response.status===201){
         socket.emit("inputs", producto)
@@ -93,25 +90,24 @@ const eliminarProducto = async(productoID) => {
     console.log(datos, response.status)
 
     if(response.status===200){
-        socket.emit("eliminarProd", datos)
+        let liProductoEliminar = document.getElementById(`producto-${productoID}`)
+        listaProductos.removeChild(liProductoEliminar)
     }else{
         alert(datos.error)
     }
 }
 
-socket.on("prodEliminado", ()=> {
-    location.reload()
-})
-
-socket.on("nuevoProducto", product => {
-    let { title, description, price } = product
+socket.on("productoNuevo", productoNuevo => {
+    let { title, description, price, _id } = productoNuevo
 
     let list = document.createElement("li")
+    list.setAttribute("id", `producto-${_id}`)
     list.innerHTML = `
         <h3><strong>Nombre: </strong>${title}</h3>
         <p><strong>Descripcion: </strong>${description}</p>
         <span><strong>Precio: </strong>${price}</span>
-        <button onclick="eliminarProducto({{id}})">Eliminar</button>
+        <button onclick="eliminarProducto('${_id}')">Eliminar</button>
+        
     `
     listaProductos.append(list)
 })

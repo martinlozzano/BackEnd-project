@@ -1,0 +1,13 @@
+<h2>CARRITO</h2>
+<hr>
+<br><br>
+
+<ul>
+    {{#each products}}
+        <li>
+            <h3><strong>Nombre: </strong>{{product.title}}</h3>
+            <p><strong>Descripcion: </strong>{{product.description}}</p>
+            <span><strong>Precio: </strong>{{product.price}}</span>
+        </li>
+    {{/each}}
+</ul>

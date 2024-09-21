@@ -17,12 +17,12 @@
 
 <div>
     <ul id="list-products">
-        {{#each productos}}
-        <li>
+        {{#each products}}
+        <li id="producto-{{id}}">
             <h3><strong>Nombre: </strong>{{title}}</h3>
             <p><strong>Descripcion: </strong>{{description}}</p>
             <span><strong>Precio: </strong>{{price}}</span>
-            <button onclick="eliminarProducto({{id}})">Eliminar</button>
+            <button onclick="eliminarProducto('{{id}}')">Eliminar</button>
         </li>
         {{/each}}
     </ul>

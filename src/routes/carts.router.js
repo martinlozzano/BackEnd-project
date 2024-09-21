@@ -1,6 +1,7 @@
 import {Router} from "express"
-import { CartsManager } from "../dao/CartsManager.js"
-import { ProductsManager } from "../dao/ProductsManager.js"
+import { CartsManager } from "../dao/CartsManager.MongoDB.js"
+import { ProductsManager } from "../dao/ProductsManager.MongoDB.js"
+import { isValidObjectId } from "mongoose"
 
 export const router = Router()
 
@@ -25,15 +26,22 @@ router.get("/", async (req, res) =>{
 router.get("/:cid", async (req, res) =>{
     let { cid } = req.params
 
-    cid = Number(cid)
-    if (isNaN(cid)) {
+    if(!isValidObjectId(cid)){
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
+        return res.status(400).json({error:"Formato de id inválido."})
     }
 
-    let carritos
     try {
-        carritos = await CartsManager.getCarts()
+        let carrito = await CartsManager.getCartsById(cid)
+
+        if (!carrito) {
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({ error: `No existe el carrito con el id solicitado`})
+        }
+
+        res.setHeader("Content-Type", "application/json")
+        return res.status(200).json(carrito)
+
     } catch (error) {
         console.log(error)
         res.setHeader("Content-Type", "application/json")
@@ -43,22 +51,19 @@ router.get("/:cid", async (req, res) =>{
         })
     }
 
-    let carritoPorId = carritos.find(cart => cart.id === cid)
+    /* let carritoPorId = carritos.find(cart => cart.id === cid)
     if (!carritoPorId) {
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({ error: `No existe el carrito con el id solicitado`})
-    }
+    } */
 
-    res.setHeader("Content-Type", "application/json")
-    return res.status(200).json(carritoPorId)
+    /* res.setHeader("Content-Type", "application/json")
+    return res.status(200).json(carritoPorId) */
 })
 
 router.post("/", async (req, res) =>{
-    let cart = req.body
-    let productos = cart.length>0 ? cart : []
-
     try {
-        let carritoNuevo = await CartsManager.addCart(productos)
+        let carritoNuevo = await CartsManager.createCart()
         res.setHeader("Content-Type", "application/json")
         return res.status(201).json({carritoNuevo})
     } catch (error) {
@@ -70,25 +75,28 @@ router.post("/", async (req, res) =>{
         })
     }
 })
-
+ 
 router.post("/:cid/product/:pid", async (req, res) =>{
     let { cid, pid } = req.params
 
-    cid = Number(cid)
-    if (isNaN(cid)) {
+    if(!isValidObjectId(cid)){
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
+        return res.status(400).json({error:"Formato de cid inválido."})
     }
 
-    pid = Number(pid)
-    if (isNaN(pid)) {
+    if(!isValidObjectId(pid)){
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
+        return res.status(400).json({error:"Formato de pid inválido."})
     }
     
-    let productos
+    let productoEncontrado
     try {
-        productos = await ProductsManager.getProducts()
+        productoEncontrado = await ProductsManager.getProductsbyId(pid)
+
+        if (!productoEncontrado) {
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({ error: `No existe el producto con el id solicitado` })
+        }
     } catch (error) {
         console.log(error)
         res.setHeader("Content-Type", "application/json")
@@ -98,17 +106,108 @@ router.post("/:cid/product/:pid", async (req, res) =>{
         })
     }
 
-    let productoEncontrado = productos.find(producto => producto.id === pid)
-
-    if (!productoEncontrado) {
+    try {
+        await CartsManager.addProductToCart(cid, pid)
+        let prodAgregado = await CartsManager.getCartsById(cid)
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `No existe el producto con el id solicitado` })
+        return res.status(200).json({prodAgregado})
+    } catch (error) {
+        console.log(error)
+        res.setHeader("Content-Type", "application/json")
+        res.status(500).json({
+            error: `Error inesperado en el servidor.`,
+            detalle: `${error.message}`
+        })
+    }
+})
+
+router.delete("/:cid/product/:pid", async (req, res) => {
+    let { cid, pid } = req.params
+
+    if(!isValidObjectId(cid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de cid inválido."})
+    }
+
+    if(!isValidObjectId(pid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de pid inválido."})
+    }
+    
+    try {
+        let carritoExiste = await CartsManager.getCartsById(cid)
+
+        if(!carritoExiste){
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({ error: `No existe el carrito con el id solicitado` })
+        }
+
+        await CartsManager.deleteProductFromCart(cid, pid)
+
+        let carritoModificado = await CartsManager.getCartsById(cid)
+
+        res.setHeader("Content-Type", "application/json")
+        return res.status(200).json({carritoModificado})
+        
+    } catch (error) {
+        console.log(error)
+        res.setHeader("Content-Type", "application/json")
+        res.status(500).json({
+            error: `Error inesperado en el servidor.`,
+            detalle: `${error.message}`
+        })
+    }
+})
+
+router.delete("/:cid", async(req,res) =>{
+    let { cid } = req.params
+
+    if(!isValidObjectId(cid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de cid inválido."})
     }
 
     try {
-        let productoAgregado = await CartsManager.addProductToCart(cid, productoEncontrado)
+        let carritoExiste = await CartsManager.getCartsById(cid)
+
+        if(!carritoExiste){
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({ error: `No existe el carrito con el id solicitado` })
+        }
+
+        await CartsManager.vaciarCarrito(cid)
+
+        let carritoModificado = await CartsManager.getCartsById(cid)
+
         res.setHeader("Content-Type", "application/json")
-        return res.status(200).json(productoAgregado)
+        return res.status(200).json({carritoModificado})
+        
+    } catch (error) {
+        console.log(error)
+        res.setHeader("Content-Type", "application/json")
+        res.status(500).json({
+            error: `Error inesperado en el servidor.`,
+            detalle: `${error.message}`
+        })
+    }
+})
+
+router.put("/:cid", async(req, res)=>{
+    let { cid } = req.params
+    let productos = req.body
+
+    if(!isValidObjectId(cid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de cid inválido."})
+    }
+
+    try {
+        await CartsManager.actualizarCarrito(cid, productos)
+        let carritoModificado = await CartsManager.getCartsById(cid)
+
+        res.setHeader("Content-Type", "application/json")
+        return res.status(200).json({carritoModificado})
+        
     } catch (error) {
         console.log(error)
         res.setHeader("Content-Type", "application/json")
@@ -118,5 +217,48 @@ router.post("/:cid/product/:pid", async (req, res) =>{
         })
     }
 
+})
 
+router.put("/:cid/product/:pid", async(req, res)=>{
+    let { cid, pid } = req.params
+    let {quantity} = req.body
+
+    quantity = Number(quantity)
+
+    if(isNaN(quantity)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de quantity inválido."})
+    }
+
+    if(!isValidObjectId(cid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de cid inválido."})
+    }
+
+    if(!isValidObjectId(pid)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"Formato de pid inválido."})
+    }
+
+    if(quantity < 1){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({error:"La cantidad no puede ser menor a 1."})
+    }
+
+    try {
+        
+        await CartsManager.actualizarCantidad(cid, pid, quantity)
+        let carritoModificado = await CartsManager.getCartsById(cid)
+
+        res.setHeader("Content-Type", "application/json")
+        return res.status(200).json({carritoModificado})
+        
+    } catch (error) {
+        console.log(error)
+        res.setHeader("Content-Type", "application/json")
+        res.status(500).json({
+            error: `Error inesperado en el servidor.`,
+            detalle: `${error.message}`
+        })
+    }
 })

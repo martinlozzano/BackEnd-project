@@ -1,83 +1,66 @@
 import {Router} from "express"
 export const router = Router()
-import { ProductsManager } from "../dao/ProductsManager.js"
+import { ProductsManager } from "../dao/ProductsManager.MongoDB.js"
+import { isValidObjectId } from "mongoose"
 
 ProductsManager.path = "./src/data/products.json"
 
 router.get("/", async (req, res) => {
-    let productos
+    let {page, limit, query, sort } = req.query
+
+    limit = Number(limit)
+    page = Number(page)
+
+    if (page && isNaN(page)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({ error: `El argumento page debe ser de tipo numérico` })
+    }
+    if (limit && isNaN(limit)){
+        res.setHeader("Content-Type", "application/json")
+        return res.status(400).json({ error: `El argumento limit debe ser de tipo numérico` })
+    }
+
     try {
-        productos = await ProductsManager.getProducts()
+        let productos = await ProductsManager.getProducts(page || 1, limit || 10, sort, query)
+
+        res.setHeader("Content-Type", "application/json")
+        return res.status(200).json(productos) 
         
     } catch (error) {
-        console.log(error)
         res.setHeader("Content-Type", "application/json")
         res.status(500).json({
             error: `Error inesperado en el servidor.`,
             detalle: `${error.message}`
         })
     }
-
-    let { limit, skip } = req.query
-    if (limit) {
-        limit = Number(limit)
-        if (isNaN(limit)) {
-            res.setHeader("Content-Type", "application/json")
-            return res.status(400).json({ error: `El argumento limit debe ser de tipo numérico` })
-        }
-    } else {
-        limit = productos.length
-    }
-
-    if (skip) {
-        skip = Number(skip)
-        if (isNaN(skip)) {
-            res.setHeader("Content-Type", "application/json")
-            return res.status(400).json({ error: `El argumento skip debe ser de tipo numérico` })
-        } else if (skip >= productos.length) {
-            res.setHeader("Content-Type", "application/json")
-            return res.status(400).json({ error: `El argumento skip no debe superar la cantidad de productos existentes` })
-        }
-    } else {
-        skip = 0
-    }
-
-    let products = productos.slice(skip, skip + limit)
-
-    res.setHeader("Content-Type", "application/json")
-    return res.status(200).json(products)
 })
 
 router.get("/:pid", async (req, res) => {
     let { pid } = req.params
 
-    pid = Number(pid)
-    if (isNaN(pid)) {
+    if(!isValidObjectId(pid)){
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
+        return res.status(400).json({error:"Formato de id inválido."})
     }
 
-    let productos
     try {
-        productos = await ProductsManager.getProducts()
-    } catch (error) {
-        console.log(error)
+        let product = await ProductsManager.getProductsbyId(pid)
+
+        if (!product) {
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({ error: `No existe el producto con el id: ${pid}` })
+        }
+
         res.setHeader("Content-Type", "application/json")
-        res.status(500).json({
+        return res.status(200).json(product)
+
+    } catch (error) {
+        res.setHeader("Content-Type", "application/json")
+        return res.status(500).json({
             error: `Error inesperado en el servidor.`,
             detalle: `${error.message}`
         })
     }
-
-    let product = productos.find(producto => producto.id === pid)
-
-    if (!product) {
-        res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `No existe el producto con el id solicitado` })
-    }
-
-    res.setHeader("Content-Type", "application/json")
-    return res.status(200).json(product)
 })
 
 router.post("/", async (req, res) => {
@@ -154,6 +137,9 @@ router.post("/", async (req, res) => {
 
     try {
         let productoNuevo = await ProductsManager.addProduct(product)
+
+        req.io.emit("productoNuevo", productoNuevo)
+
         res.setHeader("Content-Type", "application/json")
         return res.status(201).json({productoNuevo})
     } catch (error) {
@@ -168,29 +154,21 @@ router.post("/", async (req, res) => {
 
 router.put("/:pid", async(req, res) => {
     let camposActualizar = req.body
-    delete camposActualizar.id
 
     let { pid } = req.params
 
-    let productos
-    try {
-        productos = await ProductsManager.getProducts()
-    } catch (error) {
-        console.log(error)
+    if(!isValidObjectId(pid)){
         res.setHeader("Content-Type", "application/json")
-        res.status(500).json({
-            error: `Error inesperado en el servidor.`,
-            detalle: `${error.message}`
-        })
+        return res.status(400).json({error:"Formato de id inválido."})
+    }
+
+    let esBoolean = false
+
+    if((camposActualizar.status === "true") || (camposActualizar.status === "false")){
+        esBoolean = true
     }
 
     //VALIDACIONES
-
-    pid = Number(pid)
-    if (isNaN(pid)) {
-        res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
-    }
 
     if(camposActualizar.code){
         if(typeof camposActualizar.code !== "string"){
@@ -198,7 +176,7 @@ router.put("/:pid", async(req, res) => {
             return res.status(400).json({ error: `El code debe ser de tipo string.` })
         } 
 
-        let existeCode = productos.find(prod => prod.code === camposActualizar.code && prod.id !== pid)
+        let existeCode = await ProductsManager.getProductsBy({"code": camposActualizar.code})
 
         if(existeCode){
             res.setHeader("Content-Type", "application/json")
@@ -210,17 +188,17 @@ router.put("/:pid", async(req, res) => {
             res.setHeader("Content-Type", "application/json")
             return res.status(400).json({ error: `El title debe ser de tipo string.` })
         }
-        let existetitle = productos.find(prod => prod.title === camposActualizar.title && prod.id !== pid)
+        let existetitle = await ProductsManager.getProductsBy({"title": camposActualizar.title})
         if(existetitle){
             res.setHeader("Content-Type", "application/json")
-            return res.status(400).json({ error: `Ya hay un producto con el code propuesto.` })
+            return res.status(400).json({ error: `Ya hay un producto con el nombre propuesto.` })
         }
     }
     if (camposActualizar.price && typeof camposActualizar.price !== "number"){
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({ error: `El price debe ser de tipo number.` })
     }
-    if (camposActualizar.status && typeof camposActualizar.status !== "boolean"){
+    if (camposActualizar.status && !esBoolean){
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({ error: `El status debe ser de tipo boolean.` })
     }
@@ -243,10 +221,13 @@ router.put("/:pid", async(req, res) => {
 
     try {
         let productoModificado = await ProductsManager.updateProduct(pid, camposActualizar)
+        if(!productoModificado){
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({error: `No se ha podido modificar el producto`})            
+        }
         res.setHeader("Content-Type", "application/json")
         return res.status(200).json({productoModificado})
     } catch (error) {
-        console.log(error)
         res.setHeader("Content-Type", "application/json")
         res.status(500).json({
             error: `Error inesperado en el servidor.`,
@@ -259,14 +240,18 @@ router.put("/:pid", async(req, res) => {
 router.delete("/:pid", async(req, res) => {
     let { pid } = req.params
 
-    pid = Number(pid)
-    if (isNaN(pid)) {
+    if(!isValidObjectId(pid)){
         res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({ error: `El parámentro debe ser de tipo numérico.` })
+        return res.status(400).json({error:"Formato de id inválido."})
     }
 
     try {
         let productoEliminado = await ProductsManager.deleteProduct(pid)
+        if(!productoEliminado){
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({error: `No se a podido eliminar el producto solicitado`})
+        }        
+
         res.setHeader("Content-Type", "application/json")
         return res.status(200).json({productoEliminado})
     } catch (error) {

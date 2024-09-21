@@ -1,13 +1,32 @@
-<h2>Productos</h2>
-<hr>
-<br><br>
+<header>
+    <nav>
+        <div class="carrito">
+            {{!-- El enlace esta hardcodeado a un carrito en especifico, debe ser dinamico --}}
+            <a href="/carts/66ec2a6c4df6736b5255b97c"> 
+                <span class="carrito-icon">🛒</span>
+                <span class="contador-carrito">{{numCarts}}</span>
+            </a>
+        </div>
+    </nav>
+</header>
+<main>
+    <h2>Productos</h2>
+    <hr>
+    <span>Página {{page}} de {{totalPages}}</span>
+    <br><br>
 
-<ul>
-    {{#each productos}}
-        <li>
-            <h3><strong>Nombre: </strong>{{title}}</h3>
-            <p><strong>Descripcion: </strong>{{description}}</p>
-            <span><strong>Precio: </strong>{{price}}</span>
-        </li>
-    {{/each}}
-</ul>
+    <ul>
+        {{#each products}}
+            <li>
+                <h3><strong>Nombre: </strong>{{title}}</h3>
+                <p><strong>Descripcion: </strong>{{description}}</p>
+                <span><strong>Precio: </strong>{{price}}</span>
+                <button onclick="agregarAlCarrito('{{id}}')">Agregar al carrito</button>
+            </li>
+        {{/each}}
+    </ul>
+
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/home.js"></script>
