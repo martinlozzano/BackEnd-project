@@ -199,15 +199,15 @@ router.put("/:cid", async(req, res)=>{
     if(!isValidObjectId(cid)){
         res.setHeader("Content-Type", "application/json")
         return res.status(400).json({error:"Formato de cid inválido."})
-    }
+    }    
 
     try {
-        await CartsManager.actualizarCarrito(cid, productos)
+        let productosDB = await ProductsManager.getProducts()
+        await CartsManager.actualizarCarrito(cid, productos, productosDB)
         let carritoModificado = await CartsManager.getCartsById(cid)
 
         res.setHeader("Content-Type", "application/json")
         return res.status(200).json({carritoModificado})
-        
     } catch (error) {
         console.log(error)
         res.setHeader("Content-Type", "application/json")

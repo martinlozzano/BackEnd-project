@@ -12,7 +12,11 @@
 <main>
     <h2>Productos</h2>
     <hr>
-    <span>Página {{page}} de {{totalPages}}</span>
+    <span>
+        <a id="prev-link" href="/products?limit={{limit}}&page={{prevPage}}" data-paginaprevia="{{prevPage}}">Anterior</a>
+        Página {{page}} de {{totalPages}}
+        <a id="next-link" href="/products?limit={{limit}}&page={{nextPage}}" data-paginasiguiente="{{nextPage}}">Siguiente</a>
+    </span>
     <br><br>
 
     <ul>

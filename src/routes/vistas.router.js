@@ -33,6 +33,9 @@ router.get("/products", async(req, res) => {
         products: products.payload,
         page: products.page || 1,
         totalPages: products.totalpages || 1,
+        nextPage: products.nextPage,
+        prevPage: products.prevPage,
+        limit: limit,
         numCarts: cart.products.length || 0
      })
 })
@@ -65,8 +68,6 @@ router.get("/carts/:cid", async(req, res) =>{
             res.setHeader("Content-Type", "application/json")
             return res.status(400).json({ error: `No existe el carrito solicitado.` })
         }
-
-        console.log({products: cart.products})
 
         res.setHeader("Content-Type", "text/html")
         res.status(200).render("carts", {products: cart.products})

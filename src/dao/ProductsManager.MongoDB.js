@@ -6,7 +6,7 @@ export class ProductsManager {
 
         let ordenamiento = {}
 
-        if(sort && (sort === "asc" || sort === "des")){
+        if(sort && (sort.toLowerCase() === "asc" || sort.toLowerCase() === "desc")){
             if(sort === "asc"){
                 ordenamiento = {price: 1}
             } else{

@@ -61,12 +61,30 @@ export class CartsManager{
             {$set: {products: []}})
     }
 
-    static async actualizarCarrito(cid, products){
+    static async actualizarCarrito(cid, products, productosDB){
         let carritoExiste = await this.getCartsById(cid)
 
         if(!carritoExiste){
             throw new Error("El carrito seleccionado no existe.")
         }
+
+        products.forEach((prod) => {
+            let productoExiste = productosDB.payload.some(product => String(product._id) === prod.product)
+            
+            if(!productoExiste){
+                throw new Error(`El producto de id ${prod.product} no existe en la DB.`)
+            }
+        })
+
+        const conteo = {}
+
+        products.forEach(item => {
+            if (conteo[item.product]) {
+                throw new Error(`No se pueden poner productos duplicados.`)
+            } else {
+                conteo[item.product] = true;
+            }
+        })
 
         return await cartsModel.updateOne({_id: cid},
             {$set: { products }}

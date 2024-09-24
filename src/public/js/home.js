@@ -1,5 +1,6 @@
 const botonAgregarCarrito = document.getElementById("btn-agregar-carrito")
-
+const botonPrevLink = document.getElementById("prev-link")
+const botonNextLink = document.getElementById("next-link")
 
 const socket = io()
 
@@ -16,3 +17,21 @@ const agregarAlCarrito = async(productoId) => {
 
    location.reload()
 }
+
+const activadorLinks = () => {
+    let paginaPrevia = document.getElementById("prev-link").getAttribute("data-paginaprevia")
+    let paginaSiguiente = document.getElementById("next-link").getAttribute("data-paginasiguiente")
+    if (!paginaPrevia){
+        botonPrevLink.style.display = "none"
+    }else{
+        botonPrevLink.style.display = ""
+    }
+    if (!paginaSiguiente){
+        botonNextLink.style.display = "none"
+    }else{
+        botonNextLink.style.display = ""
+    }
+
+}
+
+activadorLinks()

@@ -110,18 +110,17 @@ router.post("/", async (req, res) => {
     let productos
     try {
         productos = await ProductsManager.getProducts()
+        let existeCode = productos.payload.find(producto => producto.code === code)
+        if(existeCode){
+            res.setHeader("Content-Type", "application/json")
+            return res.status(400).json({error: `El code ingresado ya se encuentra asignado a un producto.`})
+        }
     } catch (error) {
         res.setHeader("Content-Type", "application/json")
         res.status(500).json({
             error: `Error inesperado en el servidor.`,
             detalle: `${error.message}`
         })
-    }
-
-    let existeCode = productos.find(producto => producto.code === code)
-    if(existeCode){
-        res.setHeader("Content-Type", "application/json")
-        return res.status(400).json({error: `El code ingresado ya se encuentra asignado a un producto.`})
     }
 
     let product = {

@@ -2,12 +2,15 @@
 <hr>
 <br><br>
 
+<a href="/products">Volver a Productos</a>
+
 <ul>
     {{#each products}}
         <li>
             <h3><strong>Nombre: </strong>{{product.title}}</h3>
             <p><strong>Descripcion: </strong>{{product.description}}</p>
             <span><strong>Precio: </strong>{{product.price}}</span>
+            <span><strong>Cantidad: </strong>{{quantity}}</span>
         </li>
     {{/each}}
 </ul>

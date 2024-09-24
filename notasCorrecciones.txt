@@ -1,0 +1,5 @@
+1 - Agregar iconos básico de paginacion en ruta /products ver ✅
+2 - Arreglar ordenamiento de manera descendente ✅
+3 - En api/products no funciona de manera correcta el orden ✅
+4 - Error en el alta de productos (Se debe implementar un trycatch para su manejo) ✅
+5 - Metodo PUT de ruta /api/carts/:cid no valida existencia de productos en DB. Ademas no valida que los productos que llegan por body existan en la DB.  
